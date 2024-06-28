@@ -13,7 +13,8 @@ import {FormsModule} from "@angular/forms";
 export class EventPopupComponent implements OnChanges {
   @Input() event: { name: string, color: string, start: Date, end: Date } | null = null;
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<{ name: string, color: string, start: string, end: string }>();
+  @Output() save = new EventEmitter<{ name: string, color: string, start: Date, end: Date }>();
+  @Output() delete = new EventEmitter<{ name: string, color: string, start: Date, end: Date }>();
 
   eventName: string = '';
   eventColor: string = '#000000';
@@ -34,12 +35,23 @@ export class EventPopupComponent implements OnChanges {
   }
 
   saveEvent() {
-    this.save.emit({
+    const startDate = new Date(this.startDate);
+    const endDate = new Date(this.endDate);
+    const newEvent = {
       name: this.eventName,
       color: this.eventColor,
-      start: this.startDate,
-      end: this.endDate
-    });
+      start: new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())),
+      end: new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()))
+    };
+
+    this.save.emit(newEvent);
+    this.closePopup();
+  }
+
+  deleteEvent() {
+    if (this.event) {
+      this.delete.emit(this.event);
+    }
     this.closePopup();
   }
 

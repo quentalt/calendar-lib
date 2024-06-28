@@ -1,21 +1,38 @@
-<div class="p-4">
-  <div class="flex justify-between items-center mb-4">
-    <button (click)="goToToday()" class="bg-blue-700 text-white px-4 py-2 rounded">Today</button>
-    <div>
-      <button (click)="prevMonth()" class="px-4 py-2">Prev</button>
-      <button (click)="nextMonth()" class="px-4 py-2">Next</button>
+<div class="p-4 max-w-md mx-auto">
+  <div *ngIf="view === 'months'" class="grid grid-cols-3 gap-2">
+    <div *ngFor="let month of months; let i = index" class="text-center p-2 border rounded cursor-pointer" (click)="selectMonth(i)">
+      {{ month }}
     </div>
   </div>
-  <div class="grid grid-cols-7 gap-2">
-    <div *ngFor="let day of days" class="text-center font-bold">{{ day }}</div>
-    <div *ngFor="let date of dates" class="text-center p-2 border rounded-full cursor-pointer"
-         [ngClass]="{'bg-blue-200': isToday(date), 'bg-green-200': isSelected(date)}"
-         (click)="openPopup(date)">
-      {{ date.getDate() }}
-      <div *ngIf="hasEvent(date)" class="mt-1 text-xs text-white rounded-full px-2 py-1" [ngStyle]="{'background-color': getEventColor(date)}">
-        <span (click)="editEvent(date)">{{ getEventName(date) }}</span>
+  <div *ngIf="view === 'days'">
+    <div class="flex justify-between items-center mb-4">
+      <button (click)="goToToday()" class="bg-blue-700 text-white px-4 py-2 rounded">Today</button>
+      <div class="flex items-center">
+        <button (click)="prevYear()" class="px-2 py-1 border rounded mr-2">&lt;&lt;</button>
+        <select [(ngModel)]="selectedYear" (change)="onYearChange($event)" class="border p-2 rounded mr-2">
+          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+        </select>
+        <select [(ngModel)]="selectedMonth" (change)="onMonthChange($event)" class="border p-2 rounded mr-2">
+          <option *ngFor="let month of months; let i = index" [value]="i">{{ month }}</option>
+        </select>
+        <button (click)="nextYear()" class="px-2 py-1 border rounded mr-2">&gt;&gt;</button>
+        <button (click)="backToMonths()" class="bg-gray-700 text-white px-4 py-2 rounded">Back</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-7 gap-2 relative">
+      <div *ngFor="let day of days" class="text-center font-bold">{{ day }}</div>
+      <div *ngFor="let date of dates" class="text-center p-2 border rounded-full cursor-pointer"
+           [ngClass]="{'bg-blue-200': isToday(date), 'bg-green-200': isSelected(date)}"
+           (click)="openPopup(date)"
+           cdkDropList
+           [cdkDropListData]="getEventsForDate(date)"
+           (cdkDropListDropped)="onDrop($event, date)">
+        {{ date.getDate() }}
+        <div *ngFor="let event of getEventsForDate(date)" cdkDrag [cdkDragData]="event" class="mt-1 text-xs text-white rounded-full px-2 py-1" [ngStyle]="{'background-color': event.color}">
+          <span (click)="editEvent(date)">{{ event.name }}</span>
+        </div>
       </div>
     </div>
   </div>
-  <lib-event-popup *ngIf="showPopup" [event]="selectedEvent" (close)="closePopup()" (save)="saveEvent($event)"></lib-event-popup>
+  <lib-event-popup *ngIf="showPopup" [event]="selectedEvent" (close)="closePopup()" (save)="saveEvent($event)" (delete)="deleteEvent($event)"></lib-event-popup>
 </div>

@@ -6,11 +6,16 @@
     <label class="block mb-2">Event Color</label>
     <input type="color" [(ngModel)]="eventColor" class="border p-2 w-full mb-4">
     <label class="block mb-2">Event Date Range</label>
-    <input type="date" [(ngModel)]="startDate" class="border p-2 w-full mb-4">
-    <input type="date" [(ngModel)]="endDate" class="border p-2 w-full mb-4">
-    <div class="flex justify-end">
-      <button (click)="saveEvent()" class="bg-blue-700 text-white px-4 py-2 rounded mr-2">Save</button>
-      <button (click)="closePopup()" class="bg-gray-700 text-white px-4 py-2 rounded">Cancel</button>
+    <div class="flex items-center mb-4">
+      <input type="date" [(ngModel)]="startDate" class="border p-2 mr-2">
+      <span class="mr-2">to</span>
+      <input type="date" [(ngModel)]="endDate" class="border p-2">
+
+      <div class="flex items-center ml-4">
+        <button (click)="closePopup()" class="bg-gray-700 text-white px-4 py-2 rounded mr-2">Close</button>
+        <button (click)="saveEvent()" class="bg-blue-700 text-white px-4 py-2 rounded">Save</button>
+        <button (click)="deleteEvent()" class="bg-red-700 text-white px-4 py-2 rounded ml-2">Delete</button>
+      </div>
     </div>
   </div>
 </div>
