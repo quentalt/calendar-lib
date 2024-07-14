@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {FormsModule} from "@angular/forms";
-import {NgClass, NgForOf, NgIf, NgStyle} from "@angular/common";
-import {EventPopupComponent} from "../event-popup/event-popup.component";
-import {DragDropModule, CdkDragDrop, transferArrayItem} from '@angular/cdk/drag-drop';
+import { FormsModule } from "@angular/forms";
+import { NgClass, NgForOf, NgIf, NgStyle } from "@angular/common";
+import { EventPopupComponent } from "../event-popup/event-popup.component";
 
 interface CalendarEvent {
   name: string;
@@ -12,7 +11,7 @@ interface CalendarEvent {
 }
 
 @Component({
-  selector: 'lib-calendar',
+  selector: 'Calendar',
   templateUrl: './calendar.component.html',
   standalone: true,
   imports: [
@@ -21,8 +20,7 @@ interface CalendarEvent {
     NgClass,
     NgStyle,
     EventPopupComponent,
-    NgIf,
-    DragDropModule
+    NgIf
   ],
   styleUrls: ['./calendar.component.scss']
 })
@@ -175,43 +173,6 @@ export class CalendarComponent implements OnInit {
 
   getEventsForDate(date: Date): CalendarEvent[] {
     return this.events.filter(event => date >= event.start && date <= event.end);
-  }
-
-  onDrop(event: CdkDragDrop<CalendarEvent[]>, date: Date) {
-    if (event.previousContainer === event.container) {
-      return;
-    }
-
-    const movedEvent = event.item.data;
-    const newStartDate = new Date(date);
-    const updatedEvent = this.updateEventDates(movedEvent, newStartDate);
-
-    // Remove the event from the previous date's list
-    const previousDateEvents = event.previousContainer.data;
-    const eventIndex = previousDateEvents.findIndex(e => e === movedEvent);
-    if (eventIndex > -1) {
-      previousDateEvents.splice(eventIndex, 1);
-    }
-
-    // Add the updated event to the new date's list
-    const newDateEvents = event.container.data;
-    newDateEvents.push(updatedEvent);
-
-    // Update the main events array
-    this.events = this.events.map(e => e === movedEvent ? updatedEvent : e);
-    this.saveEvents();
-  }
-
-  updateEventDates(event: CalendarEvent, newStartDate: Date): CalendarEvent {
-    const duration = (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 60 * 24); // Duration in days
-    const newEndDate = new Date(newStartDate);
-    newEndDate.setDate(newEndDate.getDate() + duration);
-
-    return {
-      ...event,
-      start: newStartDate,
-      end: newEndDate
-    };
   }
 
   saveEvents() {
